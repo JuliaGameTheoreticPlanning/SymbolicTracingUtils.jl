@@ -9,7 +9,8 @@ module SymbolicTracingUtils
 using Symbolics: Symbolics
 using FastDifferentiation: FastDifferentiation as FD
 
-export SymbolicsBackend, FastDifferentiationBackend, make_variables, build_function
+export SymbolicsBackend,
+    FastDifferentiationBackend, make_variables, build_function, gradient, jacobian, sparse_jacobian
 
 struct SymbolicsBackend end
 struct FastDifferentiationBackend end
@@ -36,7 +37,7 @@ function make_variables(::FastDifferentiationBackend, name::Symbol, dimension::I
 end
 
 """
-    build_function(backend, f_symbolic, args_symbolic...; in_place, options)
+    build_function(f_symbolic, args_symbolic...; in_place, options)
 
 Builds a callable function from a symbolic expression `f_symbolic` with the given `args_symbolic` as arguments.
 
@@ -50,14 +51,14 @@ function build_function(
     f_symbolic::AbstractArray{T},
     args_symbolic...;
     in_place,
-    backend_options=(;),
+    backend_options = (;),
 ) where {T<:Symbolics.Num}
     f_callable, f_callable! = Symbolics.build_function(
         f_symbolic,
         args_symbolic...;
-        expression=Val{false},
+        expression = Val{false},
         # slightly saner defaults...
-        (; parallel=Symbolics.ShardedForm(), backend_options...)...,
+        (; parallel = Symbolics.ShardedForm(), backend_options...)...,
     )
     in_place ? f_callable! : f_callable
 end
@@ -66,7 +67,7 @@ function build_function(
     f_symbolic::AbstractArray{T},
     args_symbolic...;
     in_place,
-    backend_options=(;),
+    backend_options = (;),
 ) where {T<:FD.Node}
     FD.make_function(f_symbolic, args_symbolic...; in_place, backend_options...)
 end
@@ -99,7 +100,7 @@ function jacobian(f_symbolic::Vector{T}, x_symbolic::Vector{T}) where {T<:Symbol
 end
 
 function jacobian(f_symbolic::Vector{T}, x_symbolic::Vector{T}) where {T<:FD.Node}
-    FD.jacobian([f_symbolic], x_symbolic)
+    FD.jacobian(f_symbolic, x_symbolic)
 end
 
 """
