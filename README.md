@@ -25,15 +25,10 @@ Pkg.add("SymbolicTracingUtils")
 
 ## Usage
 
-### Importing the Package
-
-```julia
-using SymbolicTracingUtils
-```
-
 ### Creating Symbolic Variables
 
 ```julia
+using SymbolicTracingUtils
 backend = SymbolicsBackend()
 x = make_variables(backend, :x, 3)  # Creates a 3-element vector of symbolic variables `x[1]`, `x[2]`, `x[3]`
 ```
