@@ -46,28 +46,18 @@ result = f_callable([1.0, 2.0, 3.0])  # Evaluate the function
 ### Computing Gradients
 
 ```julia
-grad = gradient(f_symbolic, x)
+grad_symbolic = gradient(f_symbolic, x)
+grad_callable = build_function(grad_symbolic, x; in_place = false)
+grad_callable([1.0, 2.0, 3.0])
 ```
 
 ### Computing Jacobians
 
 ```julia
 f_vector = [x[1]^2, x[2]*x[3]]
-jac = jacobian(f_vector, x)  # Dense Jacobian
-sparse_jac = sparse_jacobian(f_vector, x)  # Sparse Jacobian
+jac_symbolic = jacobian(f_vector, x)  # Dense Jacobian
+sparse_jac_symbolic = sparse_jacobian(f_vector, x)  # Sparse Jacobian
 ```
-
-## Exports
-
-The following symbols are exported:
-
-- `SymbolicsBackend`
-- `FastDifferentiationBackend`
-- `make_variables`
-- `build_function`
-- `gradient`
-- `jacobian`
-- `sparse_jacobian`
 
 ## License
 
