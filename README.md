@@ -40,7 +40,7 @@ x = make_variables(backend, :x, 3)  # Creates a 3-element vector of symbolic var
 ```julia
 f_symbolic = x[1]^2 + x[2]*x[3]
 f_callable = build_function(f_symbolic, x; in_place = false)
-result = f_callable(1.0, 2.0, 3.0)  # Evaluate the function
+result = f_callable([1.0, 2.0, 3.0])  # Evaluate the function
 ```
 
 ### Computing Gradients
