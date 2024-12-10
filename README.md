@@ -1,4 +1,7 @@
-# SymbolicTracingUtils
+# SymbolicTracingUtils.jl
+[![CI](https://github.com/JuliaGameTheoreticPlanning/SymbolicTracingUtils.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/JuliaGameTheoreticPlanning/SymbolicTracingUtils.jl/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/JuliaGameTheoreticPlanning/SymbolicTracingUtils.jl/graph/badge.svg?token=WY8XllYoKe)](https://codecov.io/gh/JuliaGameTheoreticPlanning/SymbolicTracingUtils.jl)
+[![License](https://img.shields.io/badge/license-MIT-blue)](https://opensource.org/licenses/MIT)
 
 **SymbolicTracingUtils** is a lightweight abstraction layer designed to simplify switching between symbolic tracing packages like [`Symbolics.jl`](https://github.com/JuliaSymbolics/Symbolics.jl) and [`FastDifferentiation.jl`](https://github.com/YingboMa/FastDifferentiation.jl). 
 
