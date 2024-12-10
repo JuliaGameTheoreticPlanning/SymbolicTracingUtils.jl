@@ -1,5 +1,5 @@
 using SymbolicTracingUtils
-using Test: @test, @testset
+using Test: @test, @testset, @test_broken
 using LinearAlgebra: Diagonal
 using SparseArrays: spzeros
 
@@ -48,8 +48,12 @@ end
                 J_out_of_place = J(x_value)
                 J_in_place = zeros(10, 10)
                 J!(J_in_place, x_value)
-                # TODO: figure out why this is broken for SymbolicsBackend
-                @test J_out_of_place ≈ J_true
+                if backend isa SymbolicsBackend
+                    # see: https://github.com/JuliaSymbolics/Symbolics.jl/issues/1380
+                    @test_broken J_out_of_place ≈ J_true
+                else
+                    @test J_out_of_place ≈ J_true
+                end
                 @test J_in_place ≈ J_true
             end
 
