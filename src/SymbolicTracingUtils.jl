@@ -47,6 +47,19 @@ Depending on the `in_place` flag, the function will be built as in-place `f!(res
 """
 function build_function end
 
+# scalar fallback
+function build_function(f_symbolic::T, args_symbolic...; backend_options = (;)) where {T<:FD.Node}
+    f_callable! =
+        build_function([f_symbolic], args_symbolic...; in_place = true, backend_options...)
+
+    let output = [0.0]
+        function (x)
+            f_callable!(output, x)
+            only(output)
+        end
+    end
+end
+
 function build_function(
     f_symbolic::AbstractArray{T},
     args_symbolic...;
@@ -60,6 +73,7 @@ function build_function(
         # slightly saner defaults...
         (; parallel = Symbolics.ShardedForm(), backend_options...)...,
     )
+
     in_place ? f_callable! : f_callable
 end
 
