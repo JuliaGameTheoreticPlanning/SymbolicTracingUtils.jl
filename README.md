@@ -5,7 +5,7 @@
 
 **SymbolicTracingUtils** is a lightweight abstraction layer designed to simplify switching between symbolic tracing packages like [`Symbolics.jl`](https://github.com/JuliaSymbolics/Symbolics.jl) and [`FastDifferentiation.jl`](https://github.com/YingboMa/FastDifferentiation.jl). 
 
-Unlike other abstraction layers such as `DifferentiationInterface.jl`, this package is not limited to automatic differentiation use cases but also supports scenarios where symbolic tracing is used to generate efficient implementations of user-defined functions.
+Unlike other abstraction layers such as `DifferentiationInterface.jl`, this package is not limited to automatic differentiation use cases but also supports scenarios where symbolic tracing is used to generate efficient implementations of user-defined functions (irrespective of derivative computation).
 
 ## Features
 
