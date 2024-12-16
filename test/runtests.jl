@@ -1,7 +1,7 @@
 using SymbolicTracingUtils
 using Test: @test, @testset, @test_broken
 using LinearAlgebra: Diagonal
-using SparseArrays: spzeros
+using SparseArrays: spzeros, findnz, rowvals
 
 function dummy_function(x)
     (x .+ 1) .^ 2
@@ -57,7 +57,7 @@ end
                 @test J_in_place ≈ J_true
             end
 
-            @testset "sprase_jacobian" begin
+            @testset "sparse_jacobian" begin
                 Jx = sparse_jacobian(fx, x)
                 J = build_function(Jx, x; in_place = false)
                 J! = build_function(Jx, x; in_place = true)
@@ -67,6 +67,24 @@ end
                 J!(J_in_place, x_value)
                 @test J_out_of_place ≈ J_true
                 @test J_in_place ≈ J_true
+
+                @testset "sparsity.jl" begin
+                    rows, cols, _ = findnz(Jx)
+                    constant_entries = get_constant_entries(Jx, x)
+                    @test isempty(constant_entries) # all structural non-zeros are non-constant in this example
+                    J_sparse = SparseFunction(J, rows, cols, size(Jx), constant_entries)
+                    result = J_sparse(x_value)
+                    @test result ≈ J_true
+                    @test nnz(J_sparse) == nnz(Jx) # same structure as symbolic version
+                    @test rowvals(J_sparse) == rows
+
+                    J_sparse! = SparseFunction(J!, rows, cols, size(Jx), constant_entries)
+                    result = get_result_buffer(rows, cols, size(Jx))
+                    J_sparse!(result, x_value)
+                    @test result ≈ J_true
+                    @test nnz(J_sparse!) == nnz(Jx) # same structure as symbolic version
+                    @test rowvals(J_sparse!) == rows
+                end
             end
         end
     end
