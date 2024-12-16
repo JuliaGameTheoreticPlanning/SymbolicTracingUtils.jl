@@ -1,7 +1,7 @@
 using SymbolicTracingUtils
 using Test: @test, @testset, @test_broken
 using LinearAlgebra: Diagonal
-using SparseArrays: spzeros, findnz, rowvals
+using SparseArrays: spzeros, findnz, nnz, rowvals
 
 function dummy_function(x)
     (x .+ 1) .^ 2
