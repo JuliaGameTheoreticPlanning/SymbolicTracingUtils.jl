@@ -10,19 +10,21 @@ using Symbolics: Symbolics
 using FastDifferentiation: FastDifferentiation as FD
 using SparseArrays: SparseArrays
 
-export SymbolicsBackend,
+export build_function,
     FastDifferentiationBackend,
-    make_variables,
-    build_function,
+    get_constant_entries,
+    get_result_buffer,
     gradient,
     jacobian,
+    make_variables,
     sparse_jacobian,
     SparseFunction,
-    get_constant_entries,
-    get_result_buffer
+    SymbolicNumber,
+    SymbolicsBackend
 
 struct SymbolicsBackend end
 struct FastDifferentiationBackend end
+const SymbolicNumber = Union{Symbolics.Num,FD.Node}
 
 include("tracing.jl")
 include("derivatives.jl")
