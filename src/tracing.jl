@@ -66,5 +66,16 @@ function build_function(
     in_place,
     backend_options = (;),
 ) where {T<:FD.Node}
-    FD.make_function(f_symbolic, args_symbolic...; in_place, backend_options...)
+    f = FD.make_function(f_symbolic, args_symbolic...; in_place, backend_options...)
+
+    if in_place
+        function (result, args...)
+            f(result, reduce(vcat, args))
+        end
+    else
+        function (args...)
+            f(reduce(vcat, args))
+        end
+    end
+end
 end
