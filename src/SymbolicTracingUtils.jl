@@ -9,8 +9,10 @@ module SymbolicTracingUtils
 using Symbolics: Symbolics
 using FastDifferentiation: FastDifferentiation as FD
 using SparseArrays: SparseArrays
+using SciMLOperators: FunctionOperator
 
 export build_function,
+    build_linear_operator,
     FastDifferentiationBackend,
     get_constant_entries,
     get_result_buffer,
