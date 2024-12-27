@@ -66,5 +66,37 @@ function build_function(
     in_place,
     backend_options = (;),
 ) where {T<:FD.Node}
-    FD.make_function(f_symbolic, args_symbolic...; in_place, backend_options...)
+    f = FD.make_function(f_symbolic, args_symbolic...; in_place, backend_options...)
+
+    if in_place
+        function (result, args...)
+            f(result, reduce(vcat, args))
+        end
+    else
+        function (args...)
+            f(reduce(vcat, args))
+        end
+    end
+end
+
+"""
+Build a linear SciMLOperators.FunctionOperator from a matrix-valued function `A(p)`
+to represent the matrix-vector product `A(p) * u` in matrix-free form.
+"""
+function build_linear_operator(A_of_p::AbstractMatrix{<:SymbolicNumber}, p; in_place)
+    u = make_variables(infer_backend(A_of_p), gensym(), size(A_of_p)[end])
+    A_of_p_times_u = build_function(A_of_p * u, p, u; in_place)
+    # TODO: also analyze symmetry and other matrix properties to forward to the operator
+    input_prototype = zeros(size(u))
+    p_prototype = zeros(size(p))
+
+    if in_place
+        FunctionOperator(input_prototype; p = p_prototype, islinear = true) do result, u, p, _t
+            A_of_p_times_u(result, p, u)
+        end
+    else
+        FunctionOperator(input_prototype; p = p_prototype, islinear = true) do u, p, _t
+            A_of_p_times_u(p, u)
+        end
+    end
 end

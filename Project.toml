@@ -5,11 +5,13 @@ version = "0.1.2"
 
 [deps]
 FastDifferentiation = "eb9bf01b-bf85-4b60-bf87-ee5de06c00be"
+SciMLOperators = "c0aeaf25-5076-4817-a8d5-81caf7dfa961"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 Symbolics = "0c5d862f-8b57-4792-8d23-62f2024744c7"
 
 [compat]
 FastDifferentiation = "0.3,0.4"
+SciMLOperators = "0.3.12"
 SparseArrays = "1.10"
 Symbolics = "4,5,6"
 julia = "1.10"

@@ -9,12 +9,15 @@ module SymbolicTracingUtils
 using Symbolics: Symbolics
 using FastDifferentiation: FastDifferentiation as FD
 using SparseArrays: SparseArrays
+using SciMLOperators: FunctionOperator
 
 export build_function,
+    build_linear_operator,
     FastDifferentiationBackend,
     get_constant_entries,
     get_result_buffer,
     gradient,
+    infer_backend,
     jacobian,
     make_variables,
     sparse_jacobian,
@@ -25,6 +28,8 @@ export build_function,
 struct SymbolicsBackend end
 struct FastDifferentiationBackend end
 const SymbolicNumber = Union{Symbolics.Num,FD.Node}
+infer_backend(v::Union{Symbolics.Num,AbstractArray{<:Symbolics.Num}}) = SymbolicsBackend()
+infer_backend(v::Union{FD.Node,AbstractArray{<:FD.Node}}) = FastDifferentiationBackend()
 
 include("tracing.jl")
 include("derivatives.jl")

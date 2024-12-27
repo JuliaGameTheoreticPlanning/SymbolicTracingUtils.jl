@@ -1,6 +1,6 @@
 using SymbolicTracingUtils
 using Test: @test, @testset, @test_broken
-using LinearAlgebra: Diagonal
+using LinearAlgebra: Diagonal, mul!
 using SparseArrays: spzeros, findnz, nnz, rowvals
 
 function dummy_function(x)
@@ -17,10 +17,13 @@ end
             global x = make_variables(backend, :x, 10)
             global fx = dummy_function(x)
             global x_value = [1:10;]
+            global y_true = dummy_function(x_value)
+            global g_true = dummy_function_gradient(x_value)
+            global J_true = Diagonal(dummy_function_gradient(x_value))
+
             @testset "non-ad-tracing" begin
                 f = build_function(fx, x; in_place = false)
                 f! = build_function(fx, x; in_place = true)
-                y_true = dummy_function(x_value)
                 y_out_of_place = f(x_value)
                 y_in_place = zeros(10)
                 f!(y_in_place, x_value)
@@ -32,19 +35,17 @@ end
                 gx = gradient(sum(fx), x)
                 g = build_function(gx, x; in_place = false)
                 g! = build_function(gx, x; in_place = true)
-                y_true = dummy_function_gradient(x_value)
-                y_out_of_place = g(x_value)
-                y_in_place = zeros(10)
-                g!(y_in_place, x_value)
-                @test y_out_of_place ≈ y_true
-                @test y_in_place ≈ y_true
+                g_out_of_place = g(x_value)
+                g_in_place = zeros(10)
+                g!(g_in_place, x_value)
+                @test g_out_of_place ≈ g_true
+                @test g_in_place ≈ g_true
             end
 
             @testset "jacobian" begin
                 Jx = jacobian(fx, x)
                 J = build_function(Jx, x; in_place = false)
                 J! = build_function(Jx, x; in_place = true)
-                J_true = Diagonal(dummy_function_gradient(x_value))
                 J_out_of_place = J(x_value)
                 J_in_place = zeros(10, 10)
                 J!(J_in_place, x_value)
@@ -84,6 +85,22 @@ end
                     @test result ≈ J_true
                     @test nnz(J_sparse!) == nnz(Jx) # same structure as symbolic version
                     @test rowvals(J_sparse!) == rows
+                end
+
+                @testset "build_linear_operator" begin
+                    J_op = build_linear_operator(Jx, x; in_place = false)
+                    J_op! = build_linear_operator(Jx, x; in_place = true)
+                    v_value = [11.0:20.0;]
+                    Jv_true = J_true * v_value
+
+                    J_op.p = x_value
+                    Jv_out_of_place = J_op * v_value
+                    @test Jv_out_of_place ≈ Jv_true
+
+                    J_op!.p = x_value
+                    Jv_in_place = zeros(10)
+                    mul!(Jv_in_place, J_op!, v_value)
+                    @test Jv_in_place ≈ Jv_true
                 end
             end
         end
