@@ -20,7 +20,7 @@ function make_variables(::FastDifferentiationBackend, name::Symbol, dimension::I
 end
 
 """
-    build_function(f_symbolic, args_symbolic...; in_place, options)
+    build_function(f_symbolic, args_symbolic...; in_place, backend_options)
 
 Builds a callable function from a symbolic expression `f_symbolic` with the given `args_symbolic` as arguments.
 
@@ -32,8 +32,7 @@ function build_function end
 
 # scalar fallback
 function build_function(f_symbolic::T, args_symbolic...; backend_options = (;)) where {T<:FD.Node}
-    f_callable! =
-        build_function([f_symbolic], args_symbolic...; in_place = true, backend_options...)
+    f_callable! = build_function([f_symbolic], args_symbolic...; in_place = true, backend_options)
 
     let output = [0.0]
         function (x)
@@ -83,9 +82,14 @@ end
 Build a linear SciMLOperators.FunctionOperator from a matrix-valued function `A(p)`
 to represent the matrix-vector product `A(p) * u` in matrix-free form.
 """
-function build_linear_operator(A_of_p::AbstractMatrix{<:SymbolicNumber}, p; in_place)
+function build_linear_operator(
+    A_of_p::AbstractMatrix{<:SymbolicNumber},
+    p;
+    in_place,
+    backend_options = (;),
+)
     u = make_variables(infer_backend(A_of_p), gensym(), size(A_of_p)[end])
-    A_of_p_times_u = build_function(A_of_p * u, p, u; in_place)
+    A_of_p_times_u = build_function(A_of_p * u, p, u; in_place, backend_options)
     # TODO: also analyze symmetry and other matrix properties to forward to the operator
     input_prototype = zeros(size(u))
     p_prototype = zeros(size(p))
