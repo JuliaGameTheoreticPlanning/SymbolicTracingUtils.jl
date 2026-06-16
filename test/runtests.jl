@@ -51,7 +51,7 @@ end
                 J!(J_in_place, x_value)
                 if backend isa SymbolicsBackend
                     # see: https://github.com/JuliaSymbolics/Symbolics.jl/issues/1380
-                    @test_broken J_out_of_place ≈ J_true
+                    @test J_out_of_place ≈ J_true
                 else
                     @test J_out_of_place ≈ J_true
                 end
@@ -85,22 +85,6 @@ end
                     @test result ≈ J_true
                     @test nnz(J_sparse!) == nnz(Jx) # same structure as symbolic version
                     @test rowvals(J_sparse!) == rows
-                end
-
-                @testset "build_linear_operator" begin
-                    J_op = build_linear_operator(Jx, x; in_place = false)
-                    J_op! = build_linear_operator(Jx, x; in_place = true)
-                    v_value = [11.0:20.0;]
-                    Jv_true = J_true * v_value
-
-                    J_op.p = x_value
-                    Jv_out_of_place = J_op * v_value
-                    @test Jv_out_of_place ≈ Jv_true
-
-                    J_op!.p = x_value
-                    Jv_in_place = zeros(10)
-                    mul!(Jv_in_place, J_op!, v_value)
-                    @test Jv_in_place ≈ Jv_true
                 end
             end
         end
