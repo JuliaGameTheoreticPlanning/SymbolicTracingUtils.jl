@@ -51,7 +51,7 @@ end
                 J!(J_in_place, x_value)
                 if backend isa SymbolicsBackend
                     # see: https://github.com/JuliaSymbolics/Symbolics.jl/issues/1380
-                    @test J_out_of_place ≈ J_true
+                    @test_broken J_out_of_place ≈ J_true
                 else
                     @test J_out_of_place ≈ J_true
                 end

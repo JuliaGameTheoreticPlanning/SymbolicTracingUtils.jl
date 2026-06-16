@@ -52,7 +52,7 @@ function build_function(
         f_symbolic,
         args_symbolic...;
         expression = Val{false},
-        parallel = nothing, # accept default behavior
+        parallel = Symbolics.ShardedForm(),
         iip_config = (!in_place, in_place), # will only compute one, not both
         backend_options...,
     )
