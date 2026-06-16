@@ -11,7 +11,6 @@ using FastDifferentiation: FastDifferentiation as FD
 using SparseArrays: SparseArrays
 
 export build_function,
-    build_linear_operator,
     FastDifferentiationBackend,
     get_constant_entries,
     get_result_buffer,
