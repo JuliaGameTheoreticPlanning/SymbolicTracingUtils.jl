@@ -39,12 +39,6 @@ function get_constant_entries(
         _entry_vars = Set(Symbolics.get_variables(v))  # already BasicSymbolic
         isempty(intersect(_entry_vars, _z_vars))
     end
-
-    # _z_syms = Symbolics.tosymbol.(z_symbolic)
-    # findall(SparseArrays.nonzeros(M_symbolic)) do v
-    #     _vars_syms = Symbolics.tosymbol.(Symbolics.get_variables(v))
-    #     isempty(intersect(_vars_syms, _z_syms))
-    # end
 end
 
 function get_constant_entries(
