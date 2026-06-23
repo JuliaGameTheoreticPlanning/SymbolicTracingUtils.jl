@@ -34,10 +34,10 @@ function get_constant_entries(
     M_symbolic::AbstractMatrix{<:Symbolics.Num},
     z_symbolic::AbstractVector{<:Symbolics.Num},
 )
-    _z_syms = Symbolics.tosymbol.(z_symbolic)
+    _z_vars = Set(Symbolics.unwrap.(z_symbolic))   # Set{BasicSymbolic}
     findall(SparseArrays.nonzeros(M_symbolic)) do v
-        _vars_syms = Symbolics.tosymbol.(Symbolics.get_variables(v))
-        isempty(intersect(_vars_syms, _z_syms))
+        _entry_vars = Set(Symbolics.get_variables(v))  # already BasicSymbolic
+        isempty(intersect(_entry_vars, _z_vars))
     end
 end
 
